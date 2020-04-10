@@ -5,7 +5,6 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile-elastic
-    #image: elasticsearch:7.5.0
     container_name: elasticsearch
     environment:
       - bootstrap.memory_lock=true
