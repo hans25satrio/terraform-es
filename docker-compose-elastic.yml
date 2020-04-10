@@ -1,0 +1,27 @@
+version: '2.2'
+services:
+  elasticsearch:
+    context: .
+    build: 
+      context: .
+      dockerfile: Dockerfile-elastic
+    #image: elasticsearch:7.5.0
+    container_name: elasticsearch
+    environment:
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 1g
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      - data-es:/usr/share/elasticsearch/data
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+
+volumes:
+  data-es:
