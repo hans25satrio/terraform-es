@@ -8,13 +8,13 @@ resource "aws_security_group" "hansessg" {
     from_port   = 9200
     to_port     = 9200
     protocol    = "TCP"
-    cidr_blocks = ["172.28.0.5/32"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
     from_port   = 9300
     to_port     = 9300
     protocol    = "TCP"
-    cidr_blocks = ["172.28.0.5/32"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
     from_port   = "22"
