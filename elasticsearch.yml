@@ -1,0 +1,6 @@
+cluster.name: "test-docker-cluster"
+node.name: "test-docker-single-node"
+
+http.cors.enabled: true
+http.cors.allow-origin: "*"
+http.cors.allow-headers: "Authorization"
