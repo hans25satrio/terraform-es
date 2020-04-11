@@ -1,6 +1,6 @@
 resource "aws_key_pair" "terraform_ec2_key" {
   key_name   = "hans-key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDOs2LHTyc9xjU+9Lxb6itOu3dJCbKfPCvqjEyVs/ZyZN1t8KlJB+pnlhc+DBoxIAw1rguK6wt/HmDeA1HhXNUTYtT/k/9iopYtpTXakK4j3cQ+VRxlL7Z44mf7GcREMWmBjEslFuzMU7yLoIhvQf+ciI5VJ+NQJh3eiHx2lZsjXewd5pHSH7AcnEHVMWcYTHZ0ejv1rE03anzLj2/HLkeT0Q3dpDsIZ2S3gLUgrIXtDex5YFb/AqQp0D+esSFPapeyv5td027nN26ly2DxKB47b1WxYcHW8KaoQ+I1kfmPWxcRgMHW3HgJBnrJpK+BJXVX7RaVx9S6oh5EIv2PptNVx+8PnzhTUDTLtNLtFdpslFx3fmdEjQWdW69iGUq9g3ShALl6AEmMABzxiSU4XCZXfCmF58qdUSUa3uWk+I9fTY7T08rh80jfgrt8c/m985fbv3YH9L7vjuHip804pZB0xYJXsJqeYQK1wr9w8TK+44Ef4YatndxAa8Y9Cx6WPOLjq2R4vtBOT29VxGCzES5nNM5HQ1bBbG7waLr5QZQkffWD4221ilDd0Cw1FgAHarksuMrWCkbh4dzMaONTUmbYuwkS8nzNW4YW9ZdD40jwlmvUuLL5bRNRO6Z0haLoxkw/flNzBHVeFOaqmcEw7GdO77MdtmtOtwrQ2MF0eHesCQ== hans25satrio@gmail.com"
+  public_key = "{Add your public RSA here}"
 }
 
 resource "aws_instance" "hans-es" {
@@ -16,43 +16,49 @@ resource "aws_instance" "hans-es" {
   }
   connection {
     type        = "ssh"
-    host        = "aws_instance.hans-es.public_ip"
+    host        = aws_instance.hans-es.public_ip
     user        = "ubuntu"
-    private_key = file("pem/hans-key.pem")
+    private_key = file("pem/hans-key")
 
   }
 
   provisioner "remote-exec" {
     inline = [
       "mkdir /home/ubuntu/docker-needs",
+      "mkdir /home/ubuntu/certs"
     ]
   }
   provisioner "file" {
     source      = "../install-docker.sh"
-    destination = "/home/ubuntu"
+    destination = "/home/ubuntu/install-docker.sh"
+  }
+  provisioner "file" {
+    source      = "../certs/elastic-certificates.p12"
+    destination = "/home/ubuntu/certs/elastic-certificates.p12"
   }
   provisioner "file" {
     source      = "../elasticsearch.yml"
-    destination = "/home/ubuntu/docker-needs"
+    destination = "/home/ubuntu/docker-needs/elasticsearch.yml"
   }
   provisioner "file" {
     source      = "../Dockerfile-elastic"
-    destination = "/home/ubuntu/docker-needs"
+    destination = "/home/ubuntu/docker-needs/Dockerfile-elastic"
   }
   provisioner "file" {
-    source      = "../docker-compose-elastic"
-    destination = "/home/ubuntu/docker-needs"
+    source      = "../docker-compose-elastic.yml"
+    destination = "/home/ubuntu/docker-needs/docker-compose-elastic.yml"
   }
   provisioner "file" {
     source      = "../docker-entrypoint.sh"
-    destination = "/home/ubuntu/docker-needs"
+    destination = "/home/ubuntu/docker-needs/docker-entrypoint.sh"
   }
   provisioner "remote-exec" {
     inline = [
       "chmod +x /home/ubuntu/install-docker.sh",
+      "sudo chmod +x /home/ubuntu/certs/elastic-certificates.p12",
       "/bin/sh -c /home/ubuntu/install-docker.sh",
-      "cd docker-needs"
-      "docker-compose -f docker-compose-elastic.yml up"
+      "cd docker-needs",
+      "sudo docker-compose -f docker-compose-elastic.yml up --build -d"
     ]
   }
 

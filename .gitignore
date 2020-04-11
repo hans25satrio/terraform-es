@@ -1,0 +1,4 @@
+certs/elastic-certificates.p12
+terraform/pem/hans-key*
+terraform/.terraform*
+terraform/terraform*

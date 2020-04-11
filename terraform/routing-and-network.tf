@@ -44,6 +44,6 @@ resource "aws_eip" "Nat" {
 
 resource "aws_nat_gateway" "publicnat" {
   allocation_id = aws_eip.Nat.id
-  subnet_id     = aws_subnet.publictestA.id
+  subnet_id     = aws_subnet.publicES.id
   depends_on    = [aws_internet_gateway.gw]
 }
